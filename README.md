@@ -116,9 +116,9 @@ end
 
 ### Dry::Memoizer.immutable
 
-This module defines `let` helper differently. Instead of providing a memoizer, it executes the block at the end of the inializer and assigns the result to attribute.
+Using the same syntax, this module defines `let` helper differently.
 
-After initialization it freezes an instance deeply using the [ice_nine][ice_nine] gem.
+Instead of providing a memoizer, it executes the block at the end of the initializer and assigns the result to corresponding attribute.
 
 ```ruby
 require 'dry-initializer'
@@ -133,15 +133,11 @@ class User
   param :last_name, default: proc { nil }
 
   let(:full_name) { [first_name, last_name].compact.join('_') }
-
-  # Now you can freeze the instance
-  def initializer(*)
-    super
-    IceNine.deep_freeze(self)
-  end
 end
 
-user = User.new 'Joe', 'Doe'
+# An instance is truly immutable and can be frozen
+user = IceNine.deep_freeze(User.new 'Joe', 'Doe')
+
 user.instance_variable_get :@full_name # => 'Joe Doe'
 user.full_name # => 'Joe Doe'
 ```
@@ -166,7 +162,7 @@ class User
 end
 ```
 
-Assigning all variables inside the initializer is not a best idea. You hadly need it in production.
+Assigning all variables inside the initializer is not a best idea. You hardly need this in production.
 
 Instead, switch between module versions depending on current environment:
 
@@ -202,7 +198,14 @@ RSpec.describe User do
 end
 ```
 
-When using this trick, notice that, unlike true memoizers, in immutable version blocks are invoked in the order of definition.
+When using this trick, notice that unlike true memoizers blocks are executed in the order of definition.
+
+You should also notice the right order of extensions:
+
+```ruby
+extend Dry::Initializer        # rewrites the initializer
+extend Dry::Memoizer.immutable # appends definitions to the existing initializer
+```
 
 ## Compatibility
 
