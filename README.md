@@ -89,7 +89,7 @@ require 'hashie/mash'
 
 class CountPrice
   extend Dry::Initializer
-  extend Dry::Memoizer::Mutable
+  extend Dry::Memoizer
 
   param :product
   param :count
