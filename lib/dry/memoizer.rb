@@ -21,23 +21,39 @@ module Dry
     #
     # @param  [#to_sym] name
     # @param  [Proc]    block
-    # @return [nil]
+    # @return [self]
     #
+    # @api public
     def let(name, &block)
+      key  = name.to_sym
       ivar = :"@#{name}"
 
-      define_method(name) do
-        key = name.to_sym
-
-        @__let__ ||= {}
-        return instance_variable_get(ivar) if @__let__[key]
+      define_method(key) do
+        @__let__ ||= []
+        return instance_variable_get(ivar) if @__let__.include? key
 
         value = instance_exec(&block)
-        @__let__[key] = true
+        @__let__ << key
         instance_variable_set(ivar, value)
       end
 
-      nil
+      lets << key
+      self
+    end
+
+    # Returns the set of memoized methods' names
+    #
+    # @return [Set<Symbol>]
+    #
+    # @api public
+    def lets
+      @lets ||= Set.new
+    end
+
+    # @private
+    def inherited(klass)
+      klass.instance_variable_set(:@lets, @lets)
+      super
     end
   end
 end

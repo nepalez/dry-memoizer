@@ -13,6 +13,8 @@ describe Dry::Memoizer do
 
       Test::User = Class.new(Test::Person)
 
+      expect(Test::User.lets.to_a).to eql [:full_name]
+
       user = Test::User.new "Joe", "Doe"
 
       expect { user.full_name }

@@ -21,11 +21,14 @@ module Dry::Memoizer
     #
     # @param  [#to_sym] name
     # @param  [Proc]    block
-    # @return [nil]
+    # @return [self]
     #
     def let(name, &block)
       @__let__[name.to_sym] = block
       attr_reader name
+
+      lets << name
+      self
     end
 
     # @private

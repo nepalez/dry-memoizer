@@ -80,6 +80,12 @@ class User
 end
 ```
 
+List of memoizers is available via class method `.lets`:
+
+```ruby
+User.lets # => <Set {:full_name}>
+```
+
 We prefer `let` to `def` in multi-step calculations:
 
 ```ruby

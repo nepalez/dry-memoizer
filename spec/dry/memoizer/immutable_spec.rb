@@ -13,6 +13,8 @@ describe Dry::Memoizer::Immutable do
 
       Test::User = Class.new(Test::Person)
 
+      expect(Test::User.lets.to_a).to eql [:full_name]
+
       user = IceNine.deep_freeze(Test::User.new "Joe", "Doe")
 
       expect(user.instance_variable_get :@full_name).to eql "Joe Doe"
